@@ -182,10 +182,12 @@ async def get_alerts(
             )
             if flagged
         ]
+        # Plain English only — no z-score, detector count, or other
+        # jargon in the message a business user reads by default. That
+        # detail isn't lost, just relocated: it's on `detectors`,
+        # `detector_agreement`, and the three verdict fields below, for
+        # the frontend's optional "Technical details" disclosure.
         message = f"Unusual order volume in {event.region} — {event.brand} ({event.product_name})"
-        if event.z_score.flagged and event.z_score.score is not None:
-            message += f", z={event.z_score.score:.2f}"
-        message += f" — flagged by {event.detector_agreement} of 3 detectors"
 
         alerts.append(
             Alert(
@@ -202,6 +204,9 @@ async def get_alerts(
                 },
                 detectors=detectors,
                 detector_agreement=event.detector_agreement,
+                z_score=event.z_score,
+                isolation_forest=event.isolation_forest,
+                forecast=event.forecast,
             )
         )
 

@@ -72,6 +72,65 @@ class TestAnomalyAlerts:
         assert alert["related_entity"]["region"] == "Alert Anomaly Region"
         assert alert["related_entity"]["brand"] == "Nike"
 
+    def test_the_default_message_carries_no_detector_jargon(self, api_client, admin_headers):
+        # A business user's default view is plain English — no z-score,
+        # no "N of 3 detectors" — see routers/alerts.py's message
+        # construction. That detail still exists; it just lives on the
+        # structured fields tested below, not the message string.
+        reference_hour = datetime(2026, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        for hours_ago, count in zip(range(10, 0, -1), [3, 4, 3, 4, 3, 4, 3, 4, 3, 4]):
+            for _ in range(count):
+                post_order(api_client, region="Plain Message Region", timestamp=reference_hour - timedelta(hours=hours_ago))
+        for _ in range(20):
+            post_order(api_client, region="Plain Message Region", timestamp=reference_hour)
+
+        alert = next(
+            a for a in api_client.get("/api/alerts", headers=admin_headers).json()
+            if a["type"] == "anomaly" and a["related_entity"]["region"] == "Plain Message Region"
+        )
+
+        assert alert["message"] == "Unusual order volume in Plain Message Region — Nike (Nike Running Shoes)"
+        assert "z=" not in alert["message"]
+        assert "of 3 detectors" not in alert["message"]
+
+    def test_anomaly_alerts_carry_the_raw_verdicts_for_a_technical_details_view(
+        self, api_client, admin_headers
+    ):
+        reference_hour = datetime(2026, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        for hours_ago, count in zip(range(10, 0, -1), [3, 4, 3, 4, 3, 4, 3, 4, 3, 4]):
+            for _ in range(count):
+                post_order(api_client, region="Verdict Detail Region", timestamp=reference_hour - timedelta(hours=hours_ago))
+        for _ in range(20):
+            post_order(api_client, region="Verdict Detail Region", timestamp=reference_hour)
+
+        alert = next(
+            a for a in api_client.get("/api/alerts", headers=admin_headers).json()
+            if a["type"] == "anomaly" and a["related_entity"]["region"] == "Verdict Detail Region"
+        )
+
+        # No batch run has scored these orders, so only z_score has a
+        # real verdict — isolation_forest/forecast are null, not a
+        # `flagged: false` guess, same distinction BusinessAnomalyEvent
+        # makes at GET /api/anomalies/business.
+        assert alert["z_score"]["flagged"] is True
+        assert isinstance(alert["z_score"]["score"], float)
+        assert alert["z_score"]["severity"] in ("mild", "moderate", "severe")
+        assert alert["isolation_forest"] is None
+        assert alert["forecast"] is None
+
+    def test_low_stock_and_decline_alerts_carry_no_verdict_fields(self, api_client, admin_headers):
+        seed_inventory(api_client, product_id="sku-verdictless", current_stock=5)
+        post_order(api_client, product_id="sku-verdictless", quantity=10)
+
+        alerts = api_client.get("/api/alerts", headers=admin_headers).json()
+        low_stock = next(a for a in alerts if a["type"] == "low_stock")
+
+        assert low_stock["z_score"] is None
+        assert low_stock["isolation_forest"] is None
+        assert low_stock["forecast"] is None
+        assert low_stock["detectors"] is None
+        assert low_stock["detector_agreement"] is None
+
 
 class TestLowStockAlerts:
     def test_high_risk_inventory_produces_a_low_stock_alert(self, api_client, admin_headers):

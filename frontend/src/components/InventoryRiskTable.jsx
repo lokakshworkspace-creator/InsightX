@@ -73,35 +73,37 @@ export function InventoryRiskTable() {
       )}
 
       {!loading && !error && data && data.length > 0 && (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Region</th>
-              <th>Stock</th>
-              <th>Recent Demand</th>
-              <th>Days Left</th>
-              <th>Risk</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={`${item.product_id}-${item.region}`}>
-                <td>{item.product_name}</td>
-                <td>{item.region}</td>
-                <td>{formatInteger(item.current_stock)}</td>
-                <td>{formatInteger(item.recent_demand)}</td>
-                <td>{formatDaysRemaining(item.days_of_stock_remaining)}</td>
-                <td>
-                  <span className={`risk-badge risk-badge--${item.risk.toLowerCase()}`}>
-                    {RISK_LABEL[item.risk]}
-                  </span>
-                  <ReorderSuggestion item={item} />
-                </td>
+        <div className="data-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Region</th>
+                <th>Stock</th>
+                <th>Recent Demand</th>
+                <th>Days Left</th>
+                <th>Risk</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((item) => (
+                <tr key={`${item.product_id}-${item.region}`}>
+                  <td>{item.product_name}</td>
+                  <td>{item.region}</td>
+                  <td>{formatInteger(item.current_stock)}</td>
+                  <td>{formatInteger(item.recent_demand)}</td>
+                  <td>{formatDaysRemaining(item.days_of_stock_remaining)}</td>
+                  <td>
+                    <span className={`risk-badge risk-badge--${item.risk.toLowerCase()}`}>
+                      {RISK_LABEL[item.risk]}
+                    </span>
+                    <ReorderSuggestion item={item} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   )

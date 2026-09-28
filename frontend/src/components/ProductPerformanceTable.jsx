@@ -19,28 +19,30 @@ function ProductList({ products }) {
   }
 
   return (
-    <table className="data-table">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Units Sold</th>
-          <th>Revenue</th>
-          <th>vs. previous</th>
-        </tr>
-      </thead>
-      <tbody>
-        {products.map((product) => (
-          <tr key={product.product_id}>
-            <td>{product.product_name}</td>
-            <td>{formatInteger(product.current.units_sold)}</td>
-            <td>{formatCurrency(product.current.revenue)}</td>
-            <td>
-              <DeltaBadge delta={product.change_pct.revenue} />
-            </td>
+    <div className="data-table-wrap">
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Units Sold</th>
+            <th>Revenue</th>
+            <th>vs. previous</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr key={product.product_id}>
+              <td>{product.product_name}</td>
+              <td>{formatInteger(product.current.units_sold)}</td>
+              <td>{formatCurrency(product.current.revenue)}</td>
+              <td>
+                <DeltaBadge delta={product.change_pct.revenue} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

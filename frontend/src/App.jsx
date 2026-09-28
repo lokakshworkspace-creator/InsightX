@@ -5,7 +5,7 @@ import { LoginPage } from './components/LoginPage'
 import { RequireAdmin } from './components/RequireAdmin'
 import { RequireAuth } from './components/RequireAuth'
 import { AuthProvider } from './context/AuthContext'
-import { AnomaliesPage } from './pages/AnomaliesPage'
+import { AlertsPage } from './pages/AlertsPage'
 import { BenchmarkPage } from './pages/BenchmarkPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { ProductsPage } from './pages/ProductsPage'
@@ -15,7 +15,7 @@ import { ProfilePage } from './pages/ProfilePage'
 //   /login                       public
 //   RequireAuth                  everything below: signed out -> /login
 //     AppLayout                  persistent navbar + the page
-//       /overview /products /anomalies /profile
+//       /overview /products /anomalies (labelled "Alerts") /profile
 //       RequireAdmin
 //         /benchmark             admin only, guarded here as well as hidden in the navbar
 // "/" and any unknown path fall through to /overview (which itself
@@ -33,7 +33,7 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path="/overview" element={<OverviewPage />} />
               <Route path="/products" element={<ProductsPage />} />
-              <Route path="/anomalies" element={<AnomaliesPage />} />
+              <Route path="/anomalies" element={<AlertsPage />} />
               <Route element={<RequireAdmin />}>
                 <Route path="/benchmark" element={<BenchmarkPage />} />
               </Route>

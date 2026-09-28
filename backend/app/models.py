@@ -626,6 +626,20 @@ class Alert(BaseModel):
     # Null on the other alert types, which have no notion of detectors.
     detectors: list[str] | None = None
     detector_agreement: int | None = None
+    # The same three verdict objects BusinessAnomalyEvent carries, reused
+    # as-is (not a parallel shape) — added so the frontend's alerts feed
+    # can show a "Technical details" disclosure per anomaly row (the raw
+    # z-score/Isolation Forest/forecast numbers) without a second request
+    # to GET /api/anomalies/business: routers/alerts.py already has this
+    # exact BusinessAnomalyEvent in hand when it builds each anomaly
+    # alert, from the one get_business_anomalies() call every alert in
+    # this feed is already sourced from. Null on type="anomaly" only in
+    # the sense the underlying verdict itself is null (see
+    # BusinessAnomalyEvent's docstring); always null on low_stock/decline,
+    # which have no detector verdicts at all.
+    z_score: ZScoreVerdict | None = None
+    isolation_forest: IsolationForestVerdictOut | None = None
+    forecast: ForecastVerdictOut | None = None
 
     @field_serializer("timestamp")
     def serialize_timestamp(self, dt: datetime) -> str:

@@ -6,6 +6,7 @@ import { DETECTORS } from '../utils/detectors'
 // one that ran and passed it both simply don't appear, since either way
 // it isn't evidence for the flag.
 export function DetectorBadges({ detectors }) {
+  const fullAgreement = detectors.length === DETECTORS.length
   return (
     <span className="detector-badges" aria-label={`Flagged by ${detectors.length} of 3 detectors`}>
       {DETECTORS.filter((d) => detectors.includes(d.key)).map((d) => (
@@ -13,7 +14,7 @@ export function DetectorBadges({ detectors }) {
           {d.label}
         </span>
       ))}
-      <span className="detector-badges__count">
+      <span className={`detector-badges__count${fullAgreement ? ' detector-badges__count--full' : ''}`}>
         {detectors.length} of {DETECTORS.length}
       </span>
     </span>

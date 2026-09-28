@@ -1,3 +1,4 @@
+import { Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { explainAnomaly } from '../api/client'
 
@@ -75,6 +76,7 @@ export function ExplainButton({ anomalyId }) {
         onClick={handleClick}
         disabled={state.status === 'loading'}
       >
+        <Sparkles size={14} aria-hidden="true" />
         {state.status === 'loading' ? 'Explaining…' : 'Explain'}
       </button>
       {state.status === 'error' && <span className="explain__error">{state.message}</span>}

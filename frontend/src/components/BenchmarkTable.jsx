@@ -42,30 +42,32 @@ export function BenchmarkTable() {
       {!loading && !error && data && data.benchmarks.length > 0 && (
         <>
           <p className="panel__footnote">Average revenue across all brands: {formatCurrency(data.average_revenue)}</p>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Orders</th>
-                <th>Revenue</th>
-                <th>Avg. Order Value</th>
-                <th>vs. average</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.benchmarks.map((b) => (
-                <tr key={b.brand}>
-                  <td>{b.brand}</td>
-                  <td>{formatInteger(b.orders)}</td>
-                  <td>{formatCurrency(b.revenue)}</td>
-                  <td>{formatCurrency(b.avg_order_value)}</td>
-                  <td>
-                    <DeltaBadge delta={b.revenue_vs_average_pct} />
-                  </td>
+          <div className="data-table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Brand</th>
+                  <th>Orders</th>
+                  <th>Revenue</th>
+                  <th>Avg. Order Value</th>
+                  <th>vs. average</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.benchmarks.map((b) => (
+                  <tr key={b.brand}>
+                    <td>{b.brand}</td>
+                    <td>{formatInteger(b.orders)}</td>
+                    <td>{formatCurrency(b.revenue)}</td>
+                    <td>{formatCurrency(b.avg_order_value)}</td>
+                    <td>
+                      <DeltaBadge delta={b.revenue_vs_average_pct} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </section>

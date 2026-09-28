@@ -10,7 +10,7 @@ export function DeltaBadge({ delta }) {
   if (delta === null) {
     return (
       <span className="metric-card__delta metric-card__delta--neutral" title="No prior period to compare">
-        New
+        n/a
       </span>
     )
   }

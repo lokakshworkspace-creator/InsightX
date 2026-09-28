@@ -12,8 +12,10 @@ import {
 import { getOrderForecast, getOrderTrend, getProductStats } from '../api/client'
 import { useBrandFilter } from '../context/BrandFilterContext'
 import { POLL_INTERVAL_MS } from '../constants'
+import { theme } from '../theme'
 import { useApiData } from '../hooks/useApiData'
 import { formatCurrency } from '../utils/formatters'
+import { ChartTooltip } from './ChartTooltip'
 import { ErrorState } from './ErrorState'
 import { LoadingState } from './LoadingState'
 import { RangeToggle } from './RangeToggle'
@@ -124,25 +126,40 @@ export function TrendChart() {
               <AreaChart data={overlayData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
                 <defs>
                   <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+                    <stop offset="0%" stopColor={theme.accentBright} stopOpacity={0.4} />
+                    <stop offset="100%" stopColor={theme.accentBright} stopOpacity={0} />
                   </linearGradient>
+                  {/* A soft blur behind the line stroke gives it the
+                      "glowing line" look the reference uses, without a
+                      CSS filter (SVG filters render reliably inside
+                      Recharts; a CSS drop-shadow on the <path> does not,
+                      across browsers). */}
+                  <filter id="trendGlow" x="-20%" y="-40%" width="140%" height="180%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="period" stroke="var(--text-muted)" minTickGap={24} />
-                <YAxis stroke="var(--text-muted)" tickFormatter={formatCurrency} width={72} />
+                <CartesianGrid strokeDasharray="3 3" stroke={theme.border} vertical={false} />
+                <XAxis dataKey="period" stroke={theme.textFaint} tick={{ fill: theme.textFaint, fontSize: 11 }} minTickGap={24} tickLine={false} axisLine={{ stroke: theme.border }} />
+                <YAxis stroke={theme.textFaint} tick={{ fill: theme.textFaint, fontSize: 11 }} tickFormatter={formatCurrency} width={72} tickLine={false} axisLine={false} />
                 <Tooltip
-                  formatter={(value, name) => [
-                    formatCurrency(value),
-                    name === 'projected' ? 'Projected' : 'Revenue',
-                  ]}
+                  content={
+                    <ChartTooltip
+                      formatter={(value, name) => [formatCurrency(value), name === 'projected' ? 'Projected' : 'Revenue']}
+                    />
+                  }
                 />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="var(--accent)"
-                  strokeWidth={2}
+                  name="revenue"
+                  stroke={theme.accentBright}
+                  strokeWidth={2.5}
                   fill="url(#trendFill)"
+                  filter="url(#trendGlow)"
                   isAnimationActive={false}
                   connectNulls={false}
                 />
@@ -150,7 +167,8 @@ export function TrendChart() {
                   <Line
                     type="monotone"
                     dataKey="projected"
-                    stroke="var(--text-muted)"
+                    name="projected"
+                    stroke={theme.text}
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     dot={false}

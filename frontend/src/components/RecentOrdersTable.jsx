@@ -42,28 +42,30 @@ export function RecentOrdersTable() {
       )}
 
       {!loading && !error && data && data.length > 0 && (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Region</th>
-              <th>Qty</th>
-              <th>Total</th>
-              <th>When</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((order) => (
-              <tr key={order.id} className={order.anomaly ? 'data-table__row--flagged' : undefined}>
-                <td>{order.product_name}</td>
-                <td>{order.region}</td>
-                <td>{formatInteger(order.quantity)}</td>
-                <td>{formatCurrency(order.total_value)}</td>
-                <td>{formatRelativeTime(order.timestamp)}</td>
+        <div className="data-table-wrap">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Region</th>
+                <th>Qty</th>
+                <th>Total</th>
+                <th>When</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((order) => (
+                <tr key={order.id} className={order.anomaly ? 'data-table__row--flagged' : undefined}>
+                  <td>{order.product_name}</td>
+                  <td>{order.region}</td>
+                  <td>{formatInteger(order.quantity)}</td>
+                  <td>{formatCurrency(order.total_value)}</td>
+                  <td>{formatRelativeTime(order.timestamp)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   )

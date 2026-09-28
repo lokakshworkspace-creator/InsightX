@@ -1,6 +1,8 @@
+import { AlertCircle } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { NetworkBackground } from './NetworkBackground'
 
 const DEFAULT_LANDING = '/overview'
 
@@ -42,9 +44,13 @@ export function LoginPage() {
 
   return (
     <div className="login-page">
+      <NetworkBackground />
       <form className="login-card" onSubmit={handleSubmit}>
+        <span className="login-card__mark" aria-hidden="true">
+          I
+        </span>
         <h1 className="login-card__title">Sign in</h1>
-        <p className="login-card__subtitle">Real-Time E-Commerce Analytics Dashboard</p>
+        <p className="login-card__subtitle">InsightX — E-Commerce Analytics Dashboard</p>
 
         <label className="login-field">
           <span>Email</span>
@@ -76,6 +82,10 @@ export function LoginPage() {
 
         {error && (
           <div className="status-state status-state--error" role="alert">
+            <strong>
+              <AlertCircle size={16} aria-hidden="true" />
+              Sign-in failed
+            </strong>
             <span>{error.message}</span>
           </div>
         )}

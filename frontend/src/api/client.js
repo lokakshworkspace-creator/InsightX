@@ -198,9 +198,10 @@ export function getInventoryRisk({ minutes = 1440, lowStockThreshold = 20, brand
   })
 }
 
-export function getBusinessAnomalies({ limit = 50, brand } = {}) {
-  return getJson('/anomalies/business', { params: { limit, brand } })
-}
+// No frontend caller left after the Anomalies page merged into one
+// GET /api/alerts feed (see AlertsSection.jsx) — the backend endpoint
+// itself is untouched (still tested, still real API surface), this
+// file just doesn't need its own wrapper for it anymore.
 
 // On-demand LLM explanation of one flagged anomaly. POST because the
 // first call spends quota and stores the result; repeat calls return the

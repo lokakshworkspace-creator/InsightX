@@ -1,16 +1,25 @@
 import { DeltaBadge } from './DeltaBadge'
 
 // One KPI card: a label, a pre-formatted value, and an optional
-// period-over-period delta. `delta` is a plain percentage number
-// (already computed server-side — see OrderKpis.change_pct), null when
-// the previous period had nothing to compare against, or omitted
-// entirely for a card that doesn't have period comparison at all.
-export function MetricCard({ label, value, delta }) {
+// period-over-period delta, plus a rounded icon chip on the right
+// purely for visual identity — it carries no data of its own. `delta`
+// is a plain percentage number (already computed server-side — see
+// OrderKpis.change_pct), null when the previous period had nothing to
+// compare against, or omitted entirely for a card that doesn't have
+// period comparison at all.
+export function MetricCard({ label, value, delta, icon: Icon }) {
   return (
     <div className="metric-card">
-      <div className="metric-card__label">{label}</div>
-      <div className="metric-card__value">{value}</div>
-      <DeltaBadge delta={delta} />
+      <div>
+        <div className="metric-card__label">{label}</div>
+        <div className="metric-card__value">{value}</div>
+        <DeltaBadge delta={delta} />
+      </div>
+      {Icon && (
+        <span className="metric-card__icon" aria-hidden="true">
+          <Icon size={20} />
+        </span>
+      )}
     </div>
   )
 }

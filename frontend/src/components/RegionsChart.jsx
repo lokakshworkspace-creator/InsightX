@@ -3,6 +3,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { getRegionStats } from '../api/client'
 import { useBrandFilter } from '../context/BrandFilterContext'
 import { POLL_INTERVAL_MS } from '../constants'
+import { theme } from '../theme'
+import { ChartTooltip } from './ChartTooltip'
 import { DeltaBadge } from './DeltaBadge'
 import { useApiData } from '../hooks/useApiData'
 import { formatCurrency } from '../utils/formatters'
@@ -51,35 +53,46 @@ export function RegionsChart() {
         <>
           <div className="chart-wrap">
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={chartData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="region" stroke="var(--text-muted)" />
-                <YAxis stroke="var(--text-muted)" tickFormatter={formatCurrency} width={72} />
-                <Tooltip formatter={(value) => [formatCurrency(value), 'Revenue']} />
-                <Bar dataKey="revenue" fill="var(--accent)" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+              <BarChart data={chartData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }} barCategoryGap="28%">
+                <defs>
+                  <linearGradient id="regionBarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={theme.accentBright} />
+                    <stop offset="100%" stopColor={theme.accent} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={theme.border} vertical={false} />
+                <XAxis dataKey="region" stroke={theme.textFaint} tick={{ fill: theme.textFaint, fontSize: 11 }} tickLine={false} axisLine={{ stroke: theme.border }} />
+                <YAxis stroke={theme.textFaint} tick={{ fill: theme.textFaint, fontSize: 11 }} tickFormatter={formatCurrency} width={72} tickLine={false} axisLine={false} />
+                <Tooltip
+                  cursor={{ fill: theme.surfaceHover }}
+                  content={<ChartTooltip formatter={(value) => [formatCurrency(value), 'Revenue']} />}
+                />
+                <Bar dataKey="revenue" name="Revenue" fill="url(#regionBarFill)" radius={[8, 8, 0, 0]} maxBarSize={48} isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Region</th>
-                <th>Revenue</th>
-                <th>vs. previous</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((r) => (
-                <tr key={r.region}>
-                  <td>{r.region}</td>
-                  <td>{formatCurrency(r.current.revenue)}</td>
-                  <td>
-                    <DeltaBadge delta={r.change_pct.revenue} />
-                  </td>
+          <div className="data-table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Region</th>
+                  <th>Revenue</th>
+                  <th>vs. previous</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.map((r) => (
+                  <tr key={r.region}>
+                    <td>{r.region}</td>
+                    <td>{formatCurrency(r.current.revenue)}</td>
+                    <td>
+                      <DeltaBadge delta={r.change_pct.revenue} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </section>

@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom'
 import { BrandFilterProvider } from '../context/BrandFilterContext'
-import { Navbar } from './Navbar'
+import { Sidebar } from './Sidebar'
+import { TopHeader } from './TopHeader'
 
-// The shell every signed-in page renders inside: a persistent navbar
+// The shell every signed-in page renders inside: a fixed left Sidebar
+// plus, in the remaining space, a slim TopHeader (breadcrumb + user)
 // above the current page (<Outlet />). BrandFilterProvider lives HERE,
 // above both, so the admin's brand selection survives navigating
-// between pages (the navbar's BrandSwitcher sets it, whichever page is
+// between pages (the sidebar's BrandSwitcher sets it, whichever page is
 // showing reads it) instead of resetting on every route change.
 //
 // Each page fetches and polls only its own components' data — a page
@@ -15,13 +17,16 @@ import { Navbar } from './Navbar'
 export function AppLayout() {
   return (
     <BrandFilterProvider>
-      <Navbar />
-      <main className="dashboard">
-        <Outlet />
-        <p className="dashboard__footnote">
-          Synthetic order stream — see the simulator, not live production data.
-        </p>
-      </main>
+      <Sidebar />
+      <div className="app-main">
+        <TopHeader />
+        <main className="dashboard">
+          <Outlet />
+          <p className="dashboard__footnote">
+            Synthetic order stream — see the simulator, not live production data.
+          </p>
+        </main>
+      </div>
     </BrandFilterProvider>
   )
 }

@@ -1,3 +1,4 @@
+import { Download } from 'lucide-react'
 import { useState } from 'react'
 import { downloadCsv } from '../api/client'
 
@@ -24,6 +25,7 @@ export function ExportCsvButton({ path, params, filename }) {
   return (
     <span className="export-csv">
       <button type="button" className="export-csv__button" onClick={handleClick} disabled={downloading}>
+        <Download size={14} aria-hidden="true" />
         {downloading ? 'Exporting…' : 'Export CSV'}
       </button>
       {error && <span className="export-csv__error">{error.message}</span>}

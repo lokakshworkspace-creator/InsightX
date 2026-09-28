@@ -1,3 +1,4 @@
+import { CreditCard, Package, Receipt, ShoppingCart } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { getOrderKpis } from '../api/client'
 import { useBrandFilter } from '../context/BrandFilterContext'
@@ -44,21 +45,25 @@ export function KpiCardsRow() {
             label="Total Orders"
             value={formatInteger(data.current.total_orders)}
             delta={data.change_pct.total_orders}
+            icon={ShoppingCart}
           />
           <MetricCard
             label="Revenue"
             value={formatCurrency(data.current.revenue)}
             delta={data.change_pct.revenue}
+            icon={CreditCard}
           />
           <MetricCard
             label="Units Sold"
             value={formatInteger(data.current.units_sold)}
             delta={data.change_pct.units_sold}
+            icon={Package}
           />
           <MetricCard
             label="Avg Order Value"
             value={formatCurrency(data.current.avg_order_value)}
             delta={data.change_pct.avg_order_value}
+            icon={Receipt}
           />
         </div>
       )}

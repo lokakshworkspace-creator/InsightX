@@ -1,34 +1,40 @@
+/* Dark-only theme (Black / White / Red) — see theme.js for the JS-side
+   mirror of these tokens, used only where Recharts needs a literal
+   color value in an SVG prop rather than a CSS var(). Every component
+   styles itself from these variables; nothing hardcodes a color. */
 :root {
-  --bg: #f6f7f9;
-  --surface: #ffffff;
-  --border: #e2e5ea;
-  --text: #1a1d23;
-  --text-muted: #6b7280;
-  --accent: #3b6ef6;
-  --danger: #d64545;
-  --danger-bg: #fdecec;
-  --warning: #b45309;
-  --warning-bg: #fef3c7;
-  --success: #15803d;
-  --success-bg: #dcfce7;
-  color-scheme: light;
+  --bg: #050505;
+  --surface: #0f0f10;
+  --surface-2: #161617;
+  --surface-hover: #1a1a1c;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-faint: #6b6b73;
+  --accent: #e10600;
+  --accent-bright: #ff3b30;
+  --accent-soft: rgba(225, 6, 0, 0.16);
+  --accent-glow: rgba(225, 6, 0, 0.45);
+  --focus-ring: #ffffff;
+  --radius-card: 20px;
+  --radius-control: 10px;
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #14161a;
-    --surface: #1c1f26;
-    --border: #2c303a;
-    --text: #eef0f3;
-    --text-muted: #9aa1ad;
-    --accent: #6f96ff;
-    --danger: #ff6b6b;
-    --danger-bg: #3a1f22;
-    --warning: #fbbf24;
-    --warning-bg: #3a2f14;
-    --success: #4ade80;
-    --success-bg: #163a24;
-    color-scheme: dark;
+/* prefers-reduced-motion: transitions/animations are kept short (see
+   below) even without this, but anything that loops (spinner, pulse,
+   shimmer) is stopped outright for anyone who's asked for it. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
@@ -36,14 +42,79 @@
   box-sizing: border-box;
 }
 
+html {
+  background: var(--bg);
+}
+
 body {
   margin: 0;
+  min-height: 100vh;
   background: var(--bg);
   color: var(--text);
   font-family:
+    'Inter',
     system-ui,
     -apple-system,
     'Segoe UI',
     Roboto,
     sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Two soft red glows, fixed to the viewport corners — deliberately
+   `fixed` + `pointer-events: none` on a full-viewport layer BEHIND
+   everything (z-index -1) rather than a `background` on `body`: a
+   `background-attachment: fixed` gradient repaints (and can visibly
+   jump) on some browsers when the page's own height changes as data
+   loads in; a separate fixed layer never does, and never intercepts
+   clicks. Opacity is baked into each gradient's own color stops (8-12%
+   per the brief) rather than a layer-level `opacity`, so it never dims
+   anything painted on top of it. */
+.bg-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(720px circle at 8% 6%, rgba(225, 6, 0, 0.12), transparent 60%),
+    radial-gradient(760px circle at 96% 92%, rgba(225, 6, 0, 0.09), transparent 60%);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+/* A visible, consistent focus ring for every interactive element that
+   doesn't already draw its own (inputs/selects get a red ring instead —
+   see App.css) — a 2px solid outline in a color nothing else on the
+   page uses, so "this is keyboard focus" is never ambiguous. Only shown
+   for keyboard focus (`:focus-visible`), not on every mouse click. */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
 }
